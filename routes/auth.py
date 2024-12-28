@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models import User
+from services.AuthService import AuthService
 import jwt
 import datetime
 from functools import wraps
@@ -42,13 +43,15 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    user = User.query.filter_by(email=data['email']).first()
-    if user and user.check_password(data['password']):
+
+    authenticated_user = AuthService.login_user(email=data['email'], password=data['password'])
+
+    if authenticated_user:
         token = jwt.encode(
             {
-                'user_id': user.id,
-                'user_name': user.username,
-                'full_name': user.fullname,
+                'user_id': authenticated_user.id,
+                'user_name': authenticated_user.username,
+                'full_name': authenticated_user.fullname,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
             },
             Config.JWT_SECRET_KEY,
