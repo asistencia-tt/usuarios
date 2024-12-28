@@ -6,6 +6,8 @@ import jwt
 import datetime
 from functools import wraps
 from config import Config
+from utils.errors.CustomException import CustomException
+
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -30,15 +32,30 @@ def token_required(f):
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    user = User(
-        username=data['username'],
-        fullname=data['fullname'],
-        email=data['email']
-    )
-    user.set_password(data['password'])
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({"message": "User created successfully"}), 201
+
+    try:
+        # Delegar la lógica de registro al servicio
+        new_user = AuthService.register_user(
+            username=data['username'],
+            fullname=data['fullname'],
+            email=data['email'],
+            password=data['password']
+        )
+        return jsonify({
+            "message": "User created successfully",
+            "user": {
+                "id": new_user.id,
+                "username": new_user.username,
+                "fullname": new_user.fullname,
+                "email": new_user.email
+            }
+        }), 201
+
+    except CustomException as ex:
+        return jsonify({"message": str(ex)}), 400
+
+    except Exception as ex:
+        return jsonify({"message": "An error occurred", "error": str(ex)}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
