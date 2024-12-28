@@ -1,5 +1,10 @@
 from flask import jsonify
 from utils.errors.CustomException import CustomException
+from utils.logs.logger_config import setup_logging
+import logging
+
+# Configurar logging al iniciar la aplicación
+setup_logging()
 
 def register_error_handlers(app):
     """
@@ -26,9 +31,8 @@ def register_error_handlers(app):
         """
         Maneja cualquier excepción no controlada.
         """
-        import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Unhandled Exception: {str(error)}")
+        logger.error(f"Unhandled Exception: {str(error)}", exc_info=True)
         response = jsonify({
             "error": "An unexpected error occurred",
             "details": str(error),
