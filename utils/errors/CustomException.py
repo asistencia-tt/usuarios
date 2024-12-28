@@ -32,3 +32,19 @@ class CustomException(Exception):
             dict: Diccionario con el mensaje de error y el código de error.
         """
         return {"error": self.message, "code": self.code}
+
+class ValidationError(CustomException):
+    def __init__(self, message="Datos de entrada no válidos", code=400):
+        super().__init__(message, code)
+
+
+class AuthorizationError(CustomException):
+    def __init__(self, message="No tienes permisos para realizar esta acción", code=403):
+        super().__init__(message, code)
+
+class PermissionError(CustomException):
+    """
+    Error relacionado con permisos.
+    """
+    def __init__(self, message, code=403):
+        super().__init__(message, code)

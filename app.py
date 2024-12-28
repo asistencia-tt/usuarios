@@ -4,6 +4,8 @@ from extensions import db, migrate
 from routes.auth import auth_bp
 from routes.users import user_bp
 
+from utils.errors.handlers import register_error_handlers
+
 def create_app(config_name='development'):
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
@@ -13,6 +15,9 @@ def create_app(config_name='development'):
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/users')
+    
+    # Registra manejadores de errores
+    register_error_handlers(app)
     
     return app
 
