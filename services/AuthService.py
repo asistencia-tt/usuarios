@@ -1,5 +1,5 @@
 from extensions import db
-from models import User
+from models.user import User
 from utils.errors.CustomException import CustomException
 
 
