@@ -20,4 +20,4 @@ if __name__ == '__main__':
     import os
     env = os.getenv('FLASK_ENV', 'development')
     app = create_app(env)
-    app.run()
+    app.run(port=5001)
